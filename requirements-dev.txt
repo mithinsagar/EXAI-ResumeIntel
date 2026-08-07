@@ -1,0 +1,29 @@
+# EXAI-ResumeIntel: Development dependencies
+# Author: Mithin Sagar S
+
+-r requirements.txt
+
+# --- Testing ---
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+httpx>=0.25.0
+
+# --- Formatting and linting ---
+black>=23.12.0
+isort>=5.13.0
+ruff>=0.1.9
+mypy>=1.8.0
+
+# --- Notebooks ---
+jupyter>=1.0.0
+notebook>=7.0.6
+ipykernel>=6.28.0
+
+# --- Documentation ---
+mkdocs>=1.5.3
+mkdocs-material>=9.5.0
+
+# --- Type stubs ---
+types-PyYAML>=6.0.12
+types-requests>=2.31.0

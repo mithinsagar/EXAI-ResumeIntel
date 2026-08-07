@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EXAI-ResumeIntel: An Explainable AI Framework for Automated Resume Analysis using Shapley Values, LIME, and Domain Skill Ontology. Built at VIT University by Mithin Sagar S.">
+    <meta name="author" content="Mithin Sagar S">
+    <title>EXAI-ResumeIntel &mdash; Explainable AI Resume Analyzer</title>
+    <link rel="icon" type="image/svg+xml" href="static/images/logo.svg">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+    <div class="container nav-inner">
+        <a href="#top" class="brand">
+            <span class="brand-dot"></span>
+            EXAI-ResumeIntel
+            <span class="brand-tag">XAI</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="https://github.com/mithinsagar/EXAI-ResumeIntel" target="_blank" rel="noopener">GitHub</a></li>
+            <li><a href="index.html" class="nav-cta">Launch Analyzer</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="top">
+    <div class="container">
+        <span class="hero-tag">Research Project &middot; VIT University</span>
+        <h1 class="hero-title">Explainable AI<br>for Resume Analysis</h1>
+        <p class="hero-subtitle">
+            A five-layer XAI framework that combines domain skill ontology, TF-IDF + LSA semantic embeddings, exact Shapley values, LIME, and counterfactual reasoning to explain every point of your match score.
+        </p>
+        <div class="hero-buttons">
+            <a href="index.html" class="btn btn-primary">Launch Analyzer</a>
+            <a href="https://github.com/mithinsagar/EXAI-ResumeIntel" class="btn btn-secondary" target="_blank" rel="noopener">View on GitHub</a>
+        </div>
+        <p style="margin-top: 24px; font-size: 13px; color: var(--text-muted);">
+            <span id="api-status">Checking API status...</span>
+        </p>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="stats">
+    <div class="container">
+        <div class="stats-grid">
+            <div>
+                <span class="stat-value">70.73%</span>
+                <span class="stat-label">Overall Accuracy</span>
+            </div>
+            <div>
+                <span class="stat-value">2,484</span>
+                <span class="stat-label">Real Resumes</span>
+            </div>
+            <div>
+                <span class="stat-value">346</span>
+                <span class="stat-label">Skill Aliases</span>
+            </div>
+            <div>
+                <span class="stat-value">100%</span>
+                <span class="stat-label">SHAP-LIME Agreement</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+    <div class="container">
+        <h2 class="section-title">Six XAI Components</h2>
+        <p class="section-subtitle">Every score comes with a full explanation, not just a number.</p>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">SH</div>
+                <h3 class="feature-title">Exact Shapley Values</h3>
+                <p class="feature-desc">Game-theoretic feature attribution satisfying efficiency, symmetry, dummy, and additivity axioms. Exact computation for small feature sets, Kernel SHAP with 512 permutations otherwise.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">LI</div>
+                <h3 class="feature-title">LIME Local Explanations</h3>
+                <p class="feature-desc">300-perturbation weighted ridge regression validates every Shapley attribution locally. 100% directional agreement with SHAP in cross-validation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">CF</div>
+                <h3 class="feature-title">Counterfactual Analysis</h3>
+                <p class="feature-desc">Quantifies the exact score gain from acquiring each missing skill. Answers &ldquo;what if I learn X?&rdquo; with concrete score projections.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">HM</div>
+                <h3 class="feature-title">Attention Heatmap</h3>
+                <p class="feature-desc">Token-level importance map highlighting which parts of your resume drive the match score. Combines ontology matches with TF-IDF weights.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">IN</div>
+                <h3 class="feature-title">Feature Interactions</h3>
+                <p class="feature-desc">Detects skill synergies through Shapley interaction values. Identifies pairs that boost your score more than the sum of individual contributions.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">NL</div>
+                <h3 class="feature-title">Natural Language Insights</h3>
+                <p class="feature-desc">Human-readable narratives generated from all attribution values. Turns dense metrics into actionable career guidance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture -->
+<section class="section" id="architecture" style="background: var(--bg-secondary);">
+    <div class="container">
+        <h2 class="section-title">System Architecture</h2>
+        <p class="section-subtitle">Five sequential layers transform a raw resume into a fully-explained match score.</p>
+
+        <div class="arch-diagram">              Resume Text  +  Target Job Role
+                          |
+                          v
+              +-------------------------+
+              |     Resume Parser       |   Experience years, education, achievements
+              +-------------------------+
+                          |
+                          v
+              +-------------------------+
+              |     Ontology Engine     |   22 canonical skills, 346 aliases
+              |  n-gram phrase matching |   Parent-node credit propagation
+              +-------------------------+
+                          |
+                          v
+              +-------------------------+
+              |     TF-IDF + SVD (LSA)  |   10,000 features (1-3 grams)
+              |     k = 150 components  |   27.8% explained variance
+              +-------------------------+
+                          |
+                          v
+              +-------------------------+
+              |    Scoring Engine       |   Ontology 45% + Semantic 30%
+              |   Four weighted comps.  |   Depth 15% + Corpus 10%
+              +-------------------------+
+                          |
+                          v
+              +-------------------------+
+              |       XAI Layer         |   Shapley (exact for |F|<=12)
+              |  SHAP | LIME | CF | HT  |   Kernel SHAP (512 permutations)
+              +-------------------------+
+                          |
+                          v
+                    Dashboard Output
+        </div>
+    </div>
+</section>
+
+<!-- Results -->
+<section class="section" id="results">
+    <div class="container">
+        <h2 class="section-title">Evaluation Results</h2>
+        <p class="section-subtitle">Supervised LinearSVC with 5-fold stratified cross-validation on 2,484 resumes across 24 job categories.</p>
+
+        <div class="features" style="grid-template-columns: repeat(4, 1fr);">
+            <div class="feature-card">
+                <div class="stat-value" style="color: var(--success);">70.73%</div>
+                <div class="feature-title" style="margin-top: 12px;">Accuracy</div>
+                <div class="feature-desc">1,757 of 2,484 correctly classified</div>
+            </div>
+            <div class="feature-card">
+                <div class="stat-value" style="color: var(--info);">69.37%</div>
+                <div class="feature-title" style="margin-top: 12px;">Macro Precision</div>
+                <div class="feature-desc">Across all 24 categories</div>
+            </div>
+            <div class="feature-card">
+                <div class="stat-value" style="color: var(--warning);">66.05%</div>
+                <div class="feature-title" style="margin-top: 12px;">Macro F1</div>
+                <div class="feature-desc">Best: Designer 0.86</div>
+            </div>
+            <div class="feature-card">
+                <div class="stat-value" style="color: var(--accent);">0.9925</div>
+                <div class="feature-title" style="margin-top: 12px;">Best ROC-AUC</div>
+                <div class="feature-desc">HR category one-vs-rest</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="text-align: center;">
+    <div class="container">
+        <h2 class="section-title">Try It Now</h2>
+        <p class="section-subtitle">Paste any resume, pick a role, and see every layer of the analysis.</p>
+        <a href="index.html" class="btn btn-primary" style="padding: 16px 40px; font-size: 16px;">Launch the Analyzer</a>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>
+            EXAI-ResumeIntel &middot; Built at
+            <a href="https://vit.ac.in" target="_blank" rel="noopener">VIT University</a>
+            by
+            <a href="https://github.com/mithinsagar" target="_blank" rel="noopener">Mithin Sagar S</a>
+        </p>
+        <p style="margin-top: 8px;">
+            <a href="https://github.com/mithinsagar/EXAI-ResumeIntel" target="_blank" rel="noopener">GitHub</a>
+            &middot;
+            <a href="https://github.com/mithinsagar/EXAI-ResumeIntel/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+            &middot; MMXXVI
+        </p>
+    </div>
+</footer>
+
+<script src="static/js/analyzer.js"></script>
+</body>
+</html>

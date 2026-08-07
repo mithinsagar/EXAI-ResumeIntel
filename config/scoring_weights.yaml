@@ -1,0 +1,33 @@
+# EXAI-ResumeIntel: Scoring weight profiles
+# Author: Mithin Sagar S
+#
+# These weights govern the four-component scoring engine (paper: eq. 7):
+#   Score = 0.45 * S_ont + 0.30 * S_sem + 0.15 * S_dep + 0.10 * S_cor
+# Modify with care — changes affect all match scores across the system.
+
+default:
+  ontology: 0.45
+  semantic: 0.30
+  depth: 0.15
+  corpus: 0.10
+
+# Alternative profile: prioritise semantic similarity over ontology
+semantic_heavy:
+  ontology: 0.30
+  semantic: 0.45
+  depth: 0.15
+  corpus: 0.10
+
+# Alternative profile: prioritise skill ontology (best for technical roles)
+technical_focus:
+  ontology: 0.55
+  semantic: 0.25
+  depth: 0.15
+  corpus: 0.05
+
+# Alternative profile: prioritise depth (best for senior roles)
+seniority_focus:
+  ontology: 0.35
+  semantic: 0.25
+  depth: 0.30
+  corpus: 0.10

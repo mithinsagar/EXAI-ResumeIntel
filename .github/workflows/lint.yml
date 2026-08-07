@@ -1,0 +1,46 @@
+# EXAI-ResumeIntel: Linting workflow
+# Author: Mithin Sagar S
+
+name: Lint
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Ruff + Black + isort + mypy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black isort mypy
+
+      - name: Ruff
+        run: ruff check core/ xai/ api/ training/ tests/
+        continue-on-error: true
+
+      - name: Black (check only)
+        run: black --check core/ xai/ api/ training/ tests/
+        continue-on-error: true
+
+      - name: isort (check only)
+        run: isort --check-only core/ xai/ api/ training/ tests/
+        continue-on-error: true
+
+      - name: mypy
+        run: mypy core/ xai/ api/ --ignore-missing-imports
+        continue-on-error: true

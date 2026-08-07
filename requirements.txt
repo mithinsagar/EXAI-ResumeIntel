@@ -1,0 +1,42 @@
+# EXAI-ResumeIntel: Core dependencies
+# Author: Mithin Sagar S
+# GitHub: https://github.com/mithinsagar
+
+# --- Scientific stack ---
+numpy>=1.26.0
+pandas>=2.2.0
+scipy>=1.11.0
+scikit-learn>=1.4.0
+
+# --- API layer (FastAPI) ---
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-multipart>=0.0.6
+
+# --- Streamlit application ---
+streamlit>=1.40.0
+plotly>=5.22.0
+
+# --- Semantic embeddings (Streamlit app) ---
+sentence-transformers>=3.0.0
+transformers>=4.40.0
+torch>=2.3.0
+
+# --- Document parsing ---
+PyPDF2>=3.0.0
+python-docx>=1.1.0
+
+# --- Utility ---
+rapidfuzz>=3.9.0
+reportlab>=4.2.0
+PyYAML>=6.0.1
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# --- Data hosting ---
+huggingface-hub>=0.20.0
+
+# --- Visualisation (for training/evaluation) ---
+matplotlib>=3.8.0
+seaborn>=0.13.0

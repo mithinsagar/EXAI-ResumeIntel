@@ -1,0 +1,118 @@
+# EXAI-ResumeIntel: Project configuration
+# Author: Mithin Sagar S
+# GitHub: https://github.com/mithinsagar
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "exai-resumeintel"
+version = "1.0.0"
+description = "Explainable AI Framework for Automated Resume Analysis Using Shapley Values, LIME, and Domain Skill Ontology"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Mithin Sagar S", email = "mithinsagar@gmail.com" },
+]
+keywords = [
+    "explainable-ai",
+    "resume-analysis",
+    "shapley-values",
+    "lime",
+    "tf-idf",
+    "nlp",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/mithinsagar/EXAI-ResumeIntel"
+Documentation = "https://github.com/mithinsagar/EXAI-ResumeIntel/tree/main/docs"
+Repository = "https://github.com/mithinsagar/EXAI-ResumeIntel"
+Issues = "https://github.com/mithinsagar/EXAI-ResumeIntel/issues"
+
+[project.scripts]
+exai-serve = "api.server:main"
+exai-train = "training.train:main"
+exai-evaluate = "training.evaluate:main"
+
+[tool.setuptools.packages.find]
+exclude = ["tests*", "notebooks*", "docs*", "deployment*", "screenshots*"]
+
+# ────────────────────────────────────────────────────────────────────
+# Black
+# ────────────────────────────────────────────────────────────────────
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  \.git
+  | \.venv
+  | build
+  | dist
+  | notebooks
+)/
+'''
+
+# ────────────────────────────────────────────────────────────────────
+# isort
+# ────────────────────────────────────────────────────────────────────
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["core", "xai", "api", "app", "training"]
+skip_glob = ["*/.venv/*", "*/build/*", "notebooks/*"]
+
+# ────────────────────────────────────────────────────────────────────
+# Ruff
+# ────────────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [".venv", "build", "dist", "notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM"]
+ignore = ["E501", "B008"]
+
+# ────────────────────────────────────────────────────────────────────
+# mypy
+# ────────────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = ["notebooks/", "build/", "dist/"]
+
+# ────────────────────────────────────────────────────────────────────
+# pytest
+# ────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.coverage.run]
+source = ["core", "xai", "api", "training"]
+omit = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

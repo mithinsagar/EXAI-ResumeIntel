@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "EXAI-ResumeIntel: An Explainable Artificial Intelligence Framework for Automated Resume Analysis Using Shapley Values, LIME, and Domain Skill Ontology"
+version: 1.0.0
+date-released: 2026-01-15
+authors:
+  - family-names: "Sagar S"
+    given-names: "Mithin"
+    affiliation: "Vellore Institute of Technology (VIT)"
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/mithinsagar/EXAI-ResumeIntel"
+url: "https://github.com/mithinsagar/EXAI-ResumeIntel"
+abstract: >
+  EXAI-ResumeIntel is a five-layer explainable AI framework for automated
+  resume analysis. It combines a hierarchical domain skill ontology
+  (22 canonical skills, 346 aliases), a custom TF-IDF + Truncated SVD
+  semantic embedding engine, a four-component scoring model, and an XAI
+  layer producing exact Shapley values, LIME local explanations,
+  counterfactual scenarios, attention heatmaps, and natural language
+  insights. Evaluated on 2,484 real-world resumes across 24 job categories
+  using LinearSVC with 5-fold stratified cross-validation, the system
+  achieves 70.73% overall accuracy and ROC-AUC scores ranging from 0.931
+  to 0.993.
+keywords:
+  - explainable-ai
+  - resume-analysis
+  - shapley-values
+  - lime
+  - tf-idf
+  - latent-semantic-analysis
+  - skill-ontology
+  - natural-language-processing
+  - applicant-tracking-system
+  - feature-attribution
+license: MIT

@@ -1,0 +1,133 @@
+{
+  "_meta": {
+    "description": "Job role to required skill weights mapping. Weights are in [0.0, 1.0].",
+    "author": "Mithin Sagar S",
+    "github": "https://github.com/mithinsagar",
+    "version": "1.0.0"
+  },
+  "INFORMATION-TECHNOLOGY": {
+    "machine_learning": 0.8,
+    "software_engineering": 0.9,
+    "databases": 0.8,
+    "python": 0.85,
+    "web_development": 0.7,
+    "cybersecurity": 0.5,
+    "communication": 0.5,
+    "project_management": 0.5
+  },
+  "MACHINE LEARNING ENGINEER": {
+    "machine_learning": 1.0,
+    "deep_learning_frameworks": 1.0,
+    "computer_vision": 0.8,
+    "nlp": 0.8,
+    "data_science": 0.9,
+    "python": 1.0,
+    "model_deployment": 0.9,
+    "databases": 0.6,
+    "software_engineering": 0.7,
+    "communication": 0.4
+  },
+  "DATA SCIENTIST": {
+    "data_science": 1.0,
+    "machine_learning": 0.9,
+    "python": 1.0,
+    "databases": 0.7,
+    "deep_learning_frameworks": 0.7,
+    "communication": 0.6,
+    "project_management": 0.5
+  },
+  "ACCOUNTANT": {
+    "accounting": 1.0,
+    "finance": 0.8,
+    "communication": 0.6,
+    "project_management": 0.4
+  },
+  "FINANCE": {
+    "finance": 1.0,
+    "accounting": 0.7,
+    "banking": 0.6,
+    "data_science": 0.5,
+    "communication": 0.7
+  },
+  "BANKING": {
+    "banking": 1.0,
+    "finance": 0.9,
+    "accounting": 0.6,
+    "communication": 0.7,
+    "leadership": 0.5
+  },
+  "HEALTHCARE": {
+    "healthcare": 1.0,
+    "communication": 0.8,
+    "leadership": 0.5,
+    "project_management": 0.4
+  },
+  "ADVOCATE": {
+    "legal": 1.0,
+    "communication": 0.9,
+    "leadership": 0.6,
+    "project_management": 0.5
+  },
+  "HR": {
+    "hr": 1.0,
+    "communication": 0.9,
+    "leadership": 0.8,
+    "project_management": 0.6,
+    "data_science": 0.3
+  },
+  "SALES": {
+    "sales": 1.0,
+    "marketing": 0.7,
+    "communication": 0.9,
+    "leadership": 0.6
+  },
+  "DIGITAL-MEDIA": {
+    "marketing": 1.0,
+    "design": 0.7,
+    "communication": 0.9,
+    "sales": 0.5
+  },
+  "DESIGNER": {
+    "design": 1.0,
+    "communication": 0.7,
+    "software_engineering": 0.4,
+    "marketing": 0.5
+  },
+  "ENGINEERING": {
+    "mechanical_engineering": 0.9,
+    "civil_engineering": 0.7,
+    "software_engineering": 0.5,
+    "project_management": 0.7,
+    "communication": 0.5
+  },
+  "CONSTRUCTION": {
+    "civil_engineering": 1.0,
+    "mechanical_engineering": 0.5,
+    "project_management": 0.8,
+    "communication": 0.6
+  },
+  "TEACHER": {
+    "communication": 1.0,
+    "leadership": 0.8,
+    "project_management": 0.6
+  },
+  "CONSULTANT": {
+    "communication": 0.9,
+    "leadership": 0.8,
+    "project_management": 0.8,
+    "finance": 0.5,
+    "data_science": 0.5
+  },
+  "BUSINESS-DEVELOPMENT": {
+    "sales": 0.9,
+    "marketing": 0.7,
+    "communication": 0.9,
+    "leadership": 0.7,
+    "finance": 0.4
+  },
+  "PUBLIC-RELATIONS": {
+    "communication": 1.0,
+    "marketing": 0.8,
+    "leadership": 0.6
+  }
+}

@@ -1,0 +1,110 @@
+# ─── Python ────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+develop-eggs/
+downloads/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+MANIFEST
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ─── Virtual environments ──────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# ─── Testing / coverage ────────────────────────────────────────────
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.cache
+
+# ─── Jupyter ───────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+notebooks/**/.ipynb_checkpoints/
+
+# ─── IDEs ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ─── OS ────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ─── Environment ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── EXAI-ResumeIntel: data ────────────────────────────────────────
+# Raw datasets are hosted on Hugging Face — see data/README.md
+data/raw/*.csv
+data/raw/*.json
+data/raw/*.parquet
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Analysis history database (Streamlit runtime)
+*.db
+*.sqlite
+*.sqlite3
+
+# ─── EXAI-ResumeIntel: models ──────────────────────────────────────
+# Trained models hosted on Hugging Face — see models/README.md
+models/*.pkl
+models/*.memmap
+models/*.pt
+models/*.pth
+models/*.onnx
+models/*.h5
+models/*.safetensors
+!models/README.md
+!models/.gitkeep
+
+# ─── Logs ──────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Docker ────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ─── Node (for any future frontend tooling) ────────────────────────
+node_modules/
+package-lock.json
+yarn.lock
+
+# ─── Documentation build ───────────────────────────────────────────
+docs/_build/
+site/

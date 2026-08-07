@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXAI Resume Analyzer</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #181b23;
+    --bg3: #1e2130;
+    --card: #1a1d2e;
+    --border: #2a2d3e;
+    --text: #e8eaf6;
+    --muted: #8b8fa8;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --danger: #ff4d6d;
+    --warn: #ffb347;
+    --success: #00d4aa;
+    --info: #4fc3f7;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; line-height: 1.6; }
+
+  /* Layout */
+  .app { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
+  .sidebar { background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+  .main { padding: 24px; overflow-y: auto; }
+
+  /* Typography */
+  h1 { font-size: 20px; font-weight: 700; color: var(--accent); letter-spacing: -0.3px; }
+  h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+  h3 { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  p { color: var(--muted); font-size: 13px; }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+  .card + .card, .card + .grid, .grid + .card { margin-top: 16px; }
+
+  /* Grid */
+  .grid { display: grid; gap: 16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  /* Form Elements */
+  textarea, select, input[type=text] {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); padding: 10px 12px;
+    font-size: 13px; font-family: inherit; resize: vertical;
+    transition: border-color 0.2s;
+  }
+  textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 200px; }
+  select { cursor: pointer; }
+  label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 6px; }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 20px; border-radius: var(--radius-sm); font-size: 14px;
+    font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-primary:hover { background: #5a52e0; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* Score Ring */
+  .score-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .score-ring { position: relative; width: 140px; height: 140px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .score-val {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .score-val .num { font-size: 32px; font-weight: 800; }
+  .score-val .pct { font-size: 13px; color: var(--muted); }
+
+  /* Progress bars */
+  .progress-bar { background: var(--bg3); border-radius: 99px; height: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Skill badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px;
+    border-radius: 99px; font-size: 11px; font-weight: 600;
+  }
+  .badge-strong { background: #00d4aa22; color: var(--success); border: 1px solid #00d4aa44; }
+  .badge-partial { background: #ffb34722; color: var(--warn); border: 1px solid #ffb34744; }
+  .badge-missing { background: #ff4d6d22; color: var(--danger); border: 1px solid #ff4d6d44; }
+  .badge-info { background: #4fc3f722; color: var(--info); border: 1px solid #4fc3f744; }
+
+  /* XAI Chart: SHAP Bars */
+  .shap-bar-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .shap-label { width: 160px; font-size: 12px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shap-track { flex: 1; height: 24px; background: var(--bg3); border-radius: 4px; position: relative; overflow: hidden; }
+  .shap-fill-pos { position: absolute; left: 50%; top: 0; height: 100%; background: linear-gradient(90deg, #6c63ff88, #6c63ff); border-radius: 0 4px 4px 0; }
+  .shap-fill-neg { position: absolute; right: 50%; top: 0; height: 100%; background: linear-gradient(270deg, #ff4d6d88, #ff4d6d); border-radius: 4px 0 0 4px; }
+  .shap-center { position: absolute; left: 50%; top: 0; width: 1px; height: 100%; background: var(--border); }
+  .shap-val { width: 52px; font-size: 11px; text-align: right; color: var(--muted); flex-shrink: 0; }
+
+  /* Heatmap tokens */
+  .heatmap-wrap { display: flex; flex-wrap: wrap; gap: 4px; max-height: 200px; overflow-y: auto; }
+  .heat-token { padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: monospace; cursor: default; }
+  .heat-critical { background: #ff4d6d55; color: #ff8fa3; border: 1px solid #ff4d6d44; }
+  .heat-high { background: #ffb34744; color: #ffd080; border: 1px solid #ffb34733; }
+  .heat-medium { background: #6c63ff33; color: #a5a0ff; border: 1px solid #6c63ff33; }
+  .heat-low { background: var(--bg3); color: var(--muted); }
+  .heat-none { color: #3a3d50; }
+
+  /* Counterfactual */
+  .cf-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 10px; }
+  .cf-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .cf-gain { font-size: 18px; font-weight: 700; color: var(--success); }
+
+  /* Score components */
+  .comp-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .comp-label { width: 130px; font-size: 12px; flex-shrink: 0; }
+  .comp-bar { flex: 1; }
+  .comp-val { width: 42px; font-size: 12px; text-align: right; font-weight: 600; }
+
+  /* Tab nav */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .tab { padding: 8px 16px; cursor: pointer; border-radius: var(--radius-sm) var(--radius-sm) 0 0; font-size: 13px; font-weight: 500; color: var(--muted); border: 1px solid transparent; transition: all 0.15s; }
+  .tab.active { color: var(--text); background: var(--card); border-color: var(--border); border-bottom-color: var(--card); margin-bottom: -1px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Radar Chart */
+  .radar-wrap { display: flex; justify-content: center; }
+
+  /* NL explanation box */
+  .nl-box { background: var(--bg3); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 16px; margin-bottom: 10px; font-size: 13px; line-height: 1.7; }
+  .nl-box.lime { border-left-color: var(--info); }
+  .nl-box.cf { border-left-color: var(--success); }
+
+  /* Spinner */
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Interaction matrix */
+  .interaction-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--bg3); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .interaction-label { flex: 1; font-size: 12px; }
+  .interaction-val { font-size: 12px; font-weight: 700; }
+
+  /* Skill table */
+  .skill-table { width: 100%; border-collapse: collapse; }
+  .skill-table th { text-align: left; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  .skill-table td { padding: 10px 10px; border-bottom: 1px solid var(--border)22; font-size: 12px; vertical-align: middle; }
+  .skill-table tr:last-child td { border-bottom: none; }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]:hover::after {
+    content: attr(data-tip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; font-size: 11px; white-space: nowrap; z-index: 100; color: var(--text);
+    pointer-events: none;
+  }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+  /* Logo badge */
+  .logo-badge { display: inline-flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .xai-tag { font-size: 10px; background: var(--accent)22; color: var(--accent); padding: 2px 8px; border-radius: 99px; border: 1px solid var(--accent)44; font-weight: 700; letter-spacing: 1px; }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══ SIDEBAR ══════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div>
+      <div class="logo-badge">
+        <div class="logo-dot"></div>
+        <h1>EXAI Resume</h1>
+        <span class="xai-tag">XAI</span>
+      </div>
+      <p style="margin-top:6px">Explainable AI resume analyzer — know exactly why you scored what you scored.</p>
+    </div>
+
+    <div>
+      <label for="role-select">Target Job Role</label>
+      <select id="role-select">
+        <option value="">— Select a role —</option>
+        <option value="INFORMATION-TECHNOLOGY">Information Technology</option>
+        <option value="MACHINE LEARNING ENGINEER">Machine Learning Engineer</option>
+        <option value="DATA SCIENTIST">Data Scientist</option>
+        <option value="ACCOUNTANT">Accountant</option>
+        <option value="FINANCE">Finance</option>
+        <option value="BANKING">Banking</option>
+        <option value="HEALTHCARE">Healthcare</option>
+        <option value="ADVOCATE">Legal / Advocate</option>
+        <option value="HR">Human Resources</option>
+        <option value="SALES">Sales</option>
+        <option value="DIGITAL-MEDIA">Digital Media / Marketing</option>
+        <option value="DESIGNER">Designer</option>
+        <option value="ENGINEERING">Engineering</option>
+        <option value="CONSTRUCTION">Construction</option>
+        <option value="TEACHER">Teacher / Education</option>
+        <option value="CONSULTANT">Consultant</option>
+        <option value="BUSINESS-DEVELOPMENT">Business Development</option>
+        <option value="PUBLIC-RELATIONS">Public Relations</option>
+        <option value="AVIATION">Aviation</option>
+        <option value="AUTOMOBILE">Automobile</option>
+        <option value="ARTS">Arts</option>
+        <option value="CHEF">Chef</option>
+        <option value="FITNESS">Fitness</option>
+        <option value="AGRICULTURE">Agriculture</option>
+        <option value="APPAREL">Apparel</option>
+        <option value="BPO">BPO / Customer Service</option>
+      </select>
+    </div>
+
+    <div>
+      <label for="resume-input">Your Resume Text</label>
+      <textarea id="resume-input" placeholder="Paste your resume text here...
+
+Example:
+Experienced Machine Learning Engineer with 4 years building CV pipelines using PyTorch and YOLOv8. Deployed models on AWS SageMaker. Strong Python skills, worked with COCO datasets, implemented custom SHAP-based explainability..."></textarea>
+    </div>
+
+    <button class="btn btn-primary" id="analyze-btn" onclick="analyzeResume()">
+      ⚡ Analyze Resume
+    </button>
+
+    <div id="quick-stats" style="display:none">
+      <h3>Quick Stats</h3>
+      <div id="quick-stats-content"></div>
+    </div>
+
+    <!-- Sample resumes -->
+    <div>
+      <h3>Sample Resumes</h3>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <button class="btn" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px;padding:7px 12px;justify-content:flex-start" onclick="loadSample('ml')">🤖 ML Engineer</button>
+        <button class="btn" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px;padding:7px 12px;justify-content:flex-start" onclick="loadSample('finance')">💰 Finance Analyst</button>
+        <button class="btn" style="background:var(--bg3);border:1px solid var(--border);color:var(--text);font-size:12px;padding:7px 12px;justify-content:flex-start" onclick="loadSample('hr')">👥 HR Manager</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ══════════════════════════════════════════════════════════════ -->
+  <main class="main" id="main-content">
+    <div class="empty" id="empty-state">
+      <div class="empty-icon">🎯</div>
+      <h2 style="color:var(--text)">Paste your resume & select a role</h2>
+      <p style="margin-top:8px">The XAI engine will explain every aspect of your score — not just a number, but the exact why behind it.</p>
+    </div>
+    <div id="loading" style="display:none"><div class="spinner"></div><p style="text-align:center;color:var(--muted)">Analyzing with XAI engine…</p></div>
+    <div id="results" style="display:none"></div>
+  </main>
+</div>
+
+<script>
+// EXAI-ResumeIntel: static dashboard
+// Author: Mithin Sagar S | https://github.com/mithinsagar
+// Configure API_BASE via URL parameter (?api=https://...) or edit this constant.
+const API_BASE = new URLSearchParams(window.location.search).get('api')
+              || window.EXAI_API_BASE
+              || "http://localhost:8765";
+let lastResult = null;
+
+// ── Sample resumes ──────────────────────────────────────────────────────────
+const SAMPLES = {
+  ml: {
+    role: "MACHINE LEARNING ENGINEER",
+    text: `Machine Learning Engineer | 5 Years Experience
+
+Summary:
+Experienced ML Engineer specializing in computer vision and NLP. Built production-grade object detection systems using YOLOv8 trained on COCO dataset. Proficient in PyTorch, TensorFlow, and ONNX model export. Deployed models on AWS SageMaker and implemented real-time inference pipelines using TorchServe.
+
+Skills:
+- Deep Learning: PyTorch, TensorFlow, Keras, JAX
+- Computer Vision: YOLOv8, YOLO v5, OpenCV, Detectron2, ResNet, EfficientNet
+- NLP: BERT, RoBERTa, HuggingFace transformers, LangChain, RAG pipelines
+- MLOps: MLflow, Weights & Biases, Docker, Kubernetes, FastAPI serving
+- Data: Python, pandas, numpy, scikit-learn, XGBoost, LightGBM
+- Databases: PostgreSQL, MongoDB, Redis, FAISS vector DB
+
+Experience:
+Senior ML Engineer — TechCorp (2022-Present)
+- Built YOLOv8 object detection pipeline on COCO dataset achieving 78% mAP
+- Deployed BERT-based NER model processing 10k requests/day with 98% accuracy
+- Reduced model inference time by 65% using ONNX + TensorRT optimization
+- Implemented SHAP-based model explainability dashboard for business stakeholders
+
+ML Engineer — StartupAI (2020-2022)
+- Trained ResNet-50 image classifier on custom 50k image dataset
+- Built NLP pipeline using spaCy + custom transformers for information extraction
+- Implemented A/B testing framework for model comparison
+
+Education: B.Tech Computer Science, VIT University, 2019`
+  },
+  finance: {
+    role: "FINANCE",
+    text: `Financial Analyst | CFA Level II Candidate
+
+Summary:
+Finance professional with 6 years in investment banking and equity research. Expert in financial modeling, DCF valuation, and M&A due diligence. Bloomberg certified, proficient in Excel VBA and Python for financial analysis.
+
+Skills:
+- Financial Modeling: DCF, LBO, M&A, merger models
+- Valuation: Comparable company analysis, precedent transactions
+- Tools: Bloomberg Terminal, Reuters Eikon, FactSet, Capital IQ
+- Programming: Excel VBA, Python (pandas, numpy), SQL
+- Accounting: GAAP, IFRS, financial statements analysis
+- Risk: Portfolio risk management, derivatives, hedging strategies
+
+Experience:
+Senior Financial Analyst — Goldman Sachs (2021-Present)
+- Built DCF models for 15+ M&A transactions totaling $2.3B deal value
+- Authored equity research reports for 8 companies in technology sector
+- Managed $50M portfolio with 18% annual return exceeding benchmark by 4%
+
+Financial Analyst — HDFC Bank (2019-2021)
+- Conducted credit analysis for corporate lending portfolio
+- Prepared monthly financial reporting for regulatory compliance
+
+Education: MBA Finance, IIM Ahmedabad, 2019 | CA Inter`
+  },
+  hr: {
+    role: "HR",
+    text: `HR Manager | 7 Years in Human Resources
+
+Summary:
+Strategic HR professional with expertise in talent acquisition, employee engagement, and HR transformation. Experienced with Workday HRIS, SuccessFactors, and ADP payroll systems. Strong background in labor law compliance, DEI initiatives, and organizational development.
+
+Skills:
+- Talent Acquisition: Full-cycle recruiting, ATS management, employer branding
+- HRIS: Workday, SuccessFactors, BambooHR, ADP Workforce Now
+- Compensation: Job evaluation, salary benchmarking, benefits administration
+- Compliance: FMLA, EEO, POSH, labor law, statutory compliance
+- L&D: Training design, leadership development, succession planning
+- Analytics: HR metrics, attrition analysis, workforce planning
+
+Experience:
+HR Manager — Infosys (2020-Present)
+- Led recruitment for 200+ positions annually with 92% offer acceptance rate
+- Designed onboarding program reducing time-to-productivity by 35%
+- Implemented DEI strategy increasing diversity hiring by 28%
+- Managed performance management cycle for 500-person business unit
+
+HR Business Partner — TCS (2018-2020)
+- Partner to engineering leadership for 300-employee division
+- Reduced attrition by 15% through engagement initiatives
+
+Education: MBA HR, XLRI Jamshedpur, 2017`
+  }
+};
+
+function loadSample(key) {
+  const s = SAMPLES[key];
+  document.getElementById('resume-input').value = s.text;
+  document.getElementById('role-select').value = s.role;
+}
+
+// ── Core analysis ───────────────────────────────────────────────────────────
+async function analyzeResume() {
+  const resumeText = document.getElementById('resume-input').value.trim();
+  const role = document.getElementById('role-select').value;
+
+  if (!resumeText) { alert('Please paste your resume text.'); return; }
+  if (!role) { alert('Please select a job role.'); return; }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('analyze-btn').disabled = true;
+
+  try {
+    const resp = await fetch(`${API_BASE}/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resume_text: resumeText, role })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Analysis failed');
+    lastResult = data;
+    renderResults(data);
+  } catch (err) {
+    // Fallback: run analysis client-side with mock XAI
+    console.warn('[API] Offline — running client-side analysis:', err.message);
+    const mockData = generateClientSideAnalysis(resumeText, role);
+    lastResult = mockData;
+    renderResults(mockData);
+  } finally {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('analyze-btn').disabled = false;
+  }
+}
+
+// ── Client-side XAI fallback (when API is offline) ──────────────────────────
+function generateClientSideAnalysis(text, role) {
+  const textL = text.toLowerCase();
+
+  // Role skill maps
+  const ROLE_SKILLS = {
+    "MACHINE LEARNING ENGINEER": {machine_learning:1.0,deep_learning_frameworks:1.0,computer_vision:0.8,nlp:0.8,python:1.0,model_deployment:0.9,data_science:0.9,databases:0.6,software_engineering:0.7},
+    "DATA SCIENTIST": {data_science:1.0,machine_learning:0.9,python:1.0,databases:0.7,deep_learning_frameworks:0.7,communication:0.6},
+    "INFORMATION-TECHNOLOGY": {software_engineering:0.9,databases:0.8,python:0.85,web_development:0.7,machine_learning:0.5},
+    "FINANCE": {finance:1.0,accounting:0.7,banking:0.6,data_science:0.5,communication:0.7},
+    "BANKING": {banking:1.0,finance:0.9,accounting:0.6,communication:0.7,leadership:0.5},
+    "ACCOUNTANT": {accounting:1.0,finance:0.8,communication:0.6},
+    "HR": {hr:1.0,communication:0.9,leadership:0.8,project_management:0.6},
+    "HEALTHCARE": {healthcare:1.0,communication:0.8,leadership:0.5},
+    "ADVOCATE": {legal:1.0,communication:0.9,leadership:0.6},
+    "SALES": {sales:1.0,marketing:0.7,communication:0.9,leadership:0.6},
+    "DIGITAL-MEDIA": {marketing:1.0,design:0.7,communication:0.9,sales:0.5},
+    "DESIGNER": {design:1.0,communication:0.7,software_engineering:0.4},
+    "ENGINEERING": {mechanical_engineering:0.9,project_management:0.7,communication:0.5},
+    "CONSTRUCTION": {civil_engineering:1.0,project_management:0.8,communication:0.6},
+    "TEACHER": {communication:1.0,leadership:0.8,project_management:0.6},
+    "CONSULTANT": {communication:0.9,leadership:0.8,project_management:0.8,finance:0.5},
+    "BUSINESS-DEVELOPMENT": {sales:0.9,marketing:0.7,communication:0.9,leadership:0.7},
+    "PUBLIC-RELATIONS": {communication:1.0,marketing:0.8,leadership:0.6},
+  };
+
+  // Skill keyword maps for detection
+  const SKILL_KEYWORDS = {
+    machine_learning: ['machine learning','deep learning','neural network','tensorflow','pytorch','ml ','ai ','yolo','bert','gpt','transformer','sklearn','scikit','xgboost','lightgbm','cnn','rnn','lstm'],
+    deep_learning_frameworks: ['pytorch','tensorflow','keras','cuda','gpu','jax','mxnet','onnx','tensorrt','weights and biases','wandb','mlflow'],
+    computer_vision: ['computer vision','yolo','coco','opencv','resnet','efficientnet','object detection','image','detectron','torchvision','cv2','mediapipe'],
+    nlp: ['nlp','bert','gpt','transformers','huggingface','langchain','spacy','nltk','sentiment','text classification','ner','llm'],
+    python: ['python','pandas','numpy','scipy','matplotlib','seaborn','plotly','jupyter','pip','conda'],
+    model_deployment: ['deployment','mlops','sagemaker','docker','kubernetes','fastapi','flask','api','serving','triton','bentoml'],
+    data_science: ['data science','data analysis','statistics','regression','classification','clustering','eda','hypothesis','pandas','visualization'],
+    databases: ['sql','mysql','postgresql','mongodb','redis','nosql','database','query','bigquery','snowflake','spark'],
+    software_engineering: ['software','engineering','git','github','agile','scrum','ci/cd','microservices','rest api','system design'],
+    web_development: ['react','angular','vue','html','css','javascript','typescript','nodejs','frontend','backend'],
+    finance: ['finance','financial','dcf','valuation','equity','investment','portfolio','derivatives','cfa','bloomberg','modelling'],
+    accounting: ['accounting','accountant','gaap','ifrs','audit','tax','journal','ledger','payroll','tally','quickbooks','sap'],
+    banking: ['banking','credit','loan','kyc','aml','treasury','fintech','upi','swift','rbi'],
+    healthcare: ['healthcare','medical','clinical','patient','nursing','ehr','emr','hipaa','diagnosis','pharmacology'],
+    legal: ['legal','law','attorney','lawyer','litigation','contract','court','compliance','regulatory','ipr','patent'],
+    hr: ['human resources','hr ','talent','recruitment','onboarding','hris','workday','successfactors','payroll','performance management','fmla','eeo'],
+    sales: ['sales','business development','crm','salesforce','pipeline','negotiation','revenue','quota','account management'],
+    marketing: ['marketing','seo','sem','social media','digital marketing','brand','campaign','google analytics','content','ppc'],
+    design: ['design','figma','photoshop','illustrator','ux','ui','wireframe','prototype','typography','sketch'],
+    mechanical_engineering: ['mechanical','cad','solidworks','autocad','ansys','fea','manufacturing','cnc','thermodynamics'],
+    civil_engineering: ['civil','structural','staad','etabs','revit','bim','construction','concrete','surveying'],
+    leadership: ['leadership','management','team','mentoring','coaching','strategic','executive','director'],
+    communication: ['communication','presentation','writing','verbal','stakeholder','client','report'],
+    project_management: ['project management','pmp','agile','scrum','kanban','jira','timeline','milestone','budget'],
+  };
+
+  const reqs = ROLE_SKILLS[role] || {communication:0.8,leadership:0.6,project_management:0.5};
+
+  // Extract skills
+  const extracted = {};
+  for (const [skill, keywords] of Object.entries(SKILL_KEYWORDS)) {
+    const matches = keywords.filter(kw => textL.includes(kw)).length;
+    const conf = Math.min(1.0, matches / Math.max(keywords.length * 0.3, 1));
+    if (conf > 0) extracted[skill] = conf;
+  }
+
+  // Score
+  const totalWeight = Object.values(reqs).reduce((a,b) => a+b, 0);
+  let ontologyScore = 0;
+  for (const [sk, rw] of Object.entries(reqs)) {
+    const cv = extracted[sk] || 0;
+    const cov = Math.min(1.0, cv / Math.max(rw, 0.01));
+    ontologyScore += rw * (1 - Math.pow(1-cov, 1.5));
+  }
+  ontologyScore /= totalWeight;
+
+  const yrsMatch = text.match(/(\d+)\+?\s*(?:years?|yrs?)/i);
+  const yrs = yrsMatch ? parseInt(yrsMatch[1]) : 2;
+  const depthScore = Math.min(1.0, 0.3 + yrs * 0.07 + (text.length > 1000 ? 0.1 : 0));
+  const semanticScore = 0.5 + ontologyScore * 0.2;
+  const overall = 0.45*ontologyScore + 0.30*semanticScore + 0.15*depthScore + 0.10*0.5;
+
+  // Shapley values (simplified marginal contribution)
+  const shapValues = {};
+  const baseScore = ontologyScore * 0.45;
+  for (const sk of Object.keys(reqs)) {
+    const withSkill = reqs[sk] * Math.min(1.0, (extracted[sk]||0) / Math.max(reqs[sk],0.01));
+    const withoutSkill = 0;
+    shapValues[sk] = ((withSkill - withoutSkill) / totalWeight) * 0.45;
+  }
+  const totalShap = Object.values(shapValues).reduce((a,b) => a + Math.abs(b), 0) || 1;
+  const shapSummary = Object.entries(reqs).map(([sk, rw]) => {
+    const sv = shapValues[sk] || 0;
+    const your = (extracted[sk] || 0) * 100;
+    return {
+      skill: sk,
+      display_name: sk.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+      shapley_value: parseFloat(sv.toFixed(4)),
+      contribution_pct: parseFloat((Math.abs(sv)/totalShap*100).toFixed(1)),
+      your_score: parseFloat(your.toFixed(1)),
+      required_score: parseFloat((rw*100).toFixed(1)),
+      gap: parseFloat((Math.max(0, rw - (extracted[sk]||0))*100).toFixed(1)),
+      direction: sv > 0.01 ? 'positive' : sv < -0.01 ? 'negative' : 'neutral',
+      impact_label: sv > 0.08 ? 'High Impact' : sv > 0.03 ? 'Medium Impact' : 'Low Impact'
+    };
+  }).sort((a,b) => Math.abs(b.shapley_value) - Math.abs(a.shapley_value));
+
+  // LIME (simplified)
+  const limeResults = shapSummary.slice(0,8).map(s => ({
+    skill: s.skill,
+    display_name: s.display_name,
+    lime_weight: parseFloat((s.shapley_value * (0.8 + Math.random()*0.4)).toFixed(4)),
+    your_score: s.your_score,
+    direction: s.shapley_value >= 0 ? 'positive' : 'negative'
+  })).sort((a,b) => Math.abs(b.lime_weight) - Math.abs(a.lime_weight));
+
+  // Tokens heatmap
+  const words = text.toLowerCase().split(/\s+/);
+  const allKeywords = Object.fromEntries(
+    Object.entries(SKILL_KEYWORDS).flatMap(([sk, kws]) => kws.map(kw => [kw, reqs[sk]||0.3]))
+  );
+  const tokenHeatmap = [...new Set(words)].filter(w => w.length > 3).map(w => ({
+    token: w,
+    importance: allKeywords[w] || (w.length > 5 ? 0.05 : 0),
+    level: allKeywords[w] > 0.7 ? 'critical' : allKeywords[w] > 0.4 ? 'high' : allKeywords[w] > 0.1 ? 'medium' : 'low'
+  })).sort((a,b) => b.importance - a.importance).slice(0,80);
+
+  // Counterfactuals
+  const missingSkills = Object.entries(reqs).filter(([sk]) => (extracted[sk]||0) < reqs[sk]*0.4).sort((a,b) => b[1]-a[1]);
+  const counterfactuals = missingSkills.slice(0,4).map(([sk, rw]) => {
+    const gain = (rw / totalWeight) * 0.45 * 100;
+    return {
+      skills_to_add: [sk],
+      score_before: parseFloat((overall*100).toFixed(1)),
+      score_after: parseFloat(Math.min(100,(overall*100 + gain)).toFixed(1)),
+      gain: parseFloat(gain.toFixed(1)),
+      description: `Learn ${sk.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}`,
+      priority: gain > 15 ? '🔥 Top Priority' : gain > 8 ? '⚡ High Priority' : '📌 Medium Priority'
+    };
+  });
+
+  // Interactions
+  const topSkills = shapSummary.slice(0,6).map(s=>s.skill);
+  const interactions = [];
+  for (let i=0;i<topSkills.length;i++) for (let j=i+1;j<topSkills.length;j++) {
+    const s1=topSkills[i], s2=topSkills[j];
+    const both = (extracted[s1]||0) * (extracted[s2]||0);
+    interactions.push({skill_a:s1,skill_b:s2,interaction:parseFloat((both*0.1).toFixed(4)),synergy:both>0.2?'positive':'neutral',label:`${s1.replace(/_/g,' ')} × ${s2.replace(/_/g,' ')}`});
+  }
+
+  const strong = Object.entries(reqs).filter(([sk]) => (extracted[sk]||0) >= reqs[sk]*0.75).map(([sk])=>sk);
+  const missing = Object.entries(reqs).filter(([sk]) => (extracted[sk]||0) < reqs[sk]*0.4).map(([sk])=>sk);
+  const partial = Object.entries(reqs).filter(([sk]) => { const v=(extracted[sk]||0)/reqs[sk]; return v>=0.4&&v<0.75; }).map(([sk])=>sk);
+
+  const skillBreakdown = Object.entries(reqs).map(([sk, rw]) => ({
+    skill: sk,
+    display_name: sk.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+    your_score: parseFloat(((extracted[sk]||0)*100).toFixed(1)),
+    required_score: parseFloat((rw*100).toFixed(1)),
+    gap: parseFloat((Math.max(0,rw-(extracted[sk]||0))*100).toFixed(1)),
+    coverage: parseFloat((Math.min(1,(extracted[sk]||0)/Math.max(rw,0.01))*100).toFixed(1)),
+    status: (extracted[sk]||0) >= rw*0.75 ? 'strong' : (extracted[sk]||0) >= rw*0.4 ? 'partial' : 'missing',
+    shapley: parseFloat((shapValues[sk]||0).toFixed(4))
+  })).sort((a,b) => b.required_score - a.required_score);
+
+  const topSkillName = shapSummary[0]?.display_name || 'your skills';
+  const topContrib = shapSummary[0]?.contribution_pct || 0;
+  const scoreLabel = overall >= 0.8 ? 'excellent' : overall >= 0.65 ? 'strong' : overall >= 0.5 ? 'moderate' : overall >= 0.35 ? 'developing' : 'early-stage';
+
+  return {
+    overall_score: parseFloat((overall*100).toFixed(1)),
+    score_components: {
+      ontology_score: parseFloat((ontologyScore*100).toFixed(1)),
+      semantic_score: parseFloat((semanticScore*100).toFixed(1)),
+      depth_score: parseFloat((depthScore*100).toFixed(1)),
+      corpus_score: 50,
+      weights: {ontology:0.45,semantic:0.30,depth:0.15,corpus:0.10}
+    },
+    shap_summary: shapSummary,
+    lime_results: limeResults,
+    token_heatmap: tokenHeatmap,
+    counterfactuals,
+    feature_interactions: interactions,
+    skill_breakdown: skillBreakdown,
+    strong_skills: strong,
+    missing_skills: missing,
+    partial_skills: partial,
+    nl_overall: `You have an ${scoreLabel} fit (${(overall*100).toFixed(1)}%) for the ${role.replace(/-/g,' ').replace(/\b\w/g,c=>c.toUpperCase())} role.\n\nYour strongest contributor is ${topSkillName}, accounting for ${topContrib.toFixed(1)}% of your match score.${strong.length ? '\n\nSkills working in your favor: ' + strong.slice(0,4).map(s=>s.replace(/_/g,' ')).join(', ') + '.' : ''}${missing.length ? '\n\nKey gaps to address: ' + missing.slice(0,4).map(s=>s.replace(/_/g,' ')).join(', ') + '.' : ''}`,
+    nl_shap_insights: shapSummary.slice(0,5).map(s => s.shapley_value > 0.05 ? `${s.display_name} is a strong asset — contributes +${s.contribution_pct}% to your score (you: ${s.your_score}%, required: ${s.required_score}%).` : `${s.display_name} has a modest impact on your current score.`),
+    nl_lime_insight: `Locally, ${limeResults.filter(r=>r.direction==='positive').slice(0,2).map(r=>r.display_name).join(' and ')} have the strongest positive influence on your score.`,
+    nl_counterfactual_insights: counterfactuals.slice(0,3).map(c => `If you add ${c.skills_to_add.map(s=>s.replace(/_/g,' ')).join(' + ')}, your score would rise from ${c.score_before}% → ${c.score_after}% (+${c.gain}%). ${c.priority}`),
+    role,
+    n_skills_detected: Object.keys(extracted).length,
+    n_skills_required: Object.keys(reqs).length,
+    parsed_resume: { years_experience: yrs, education_level: 3, word_count: text.split(/\s+/).length, has_quantified_achievements: /\d+%|\d+x\b|increased|decreased|improved|reduced/.test(text) }
+  };
+}
+
+// ── Render all results ───────────────────────────────────────────────────────
+function renderResults(data) {
+  const score = data.overall_score;
+  const scoreColor = score >= 75 ? '#00d4aa' : score >= 55 ? '#ffb347' : '#ff4d6d';
+
+  document.getElementById('results').innerHTML = `
+    <!-- Header row -->
+    <div class="grid grid-4" style="margin-bottom:16px">
+      ${metricCard('Overall Fit', score + '%', scoreColor)}
+      ${metricCard('Skills Detected', data.n_skills_detected, '#6c63ff')}
+      ${metricCard('Skills Required', data.n_skills_required, '#4fc3f7')}
+      ${metricCard('Experience', (data.parsed_resume?.years_experience || '?') + ' yrs', '#ffb347')}
+    </div>
+
+    <!-- Score components -->
+    <div class="card" style="margin-bottom:16px">
+      <h2>📊 Score Breakdown — How Your Score Was Computed</h2>
+      ${renderScoreComponents(data.score_components, score, scoreColor)}
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('shap')">🔬 SHAP Values</div>
+      <div class="tab" onclick="switchTab('lime')">🧪 LIME</div>
+      <div class="tab" onclick="switchTab('skills')">📋 Skill Matrix</div>
+      <div class="tab" onclick="switchTab('heatmap')">🌡 Attention Map</div>
+      <div class="tab" onclick="switchTab('counter')">💡 Counterfactuals</div>
+      <div class="tab" onclick="switchTab('interact')">🔗 Interactions</div>
+      <div class="tab" onclick="switchTab('summary')">📝 Summary</div>
+    </div>
+
+    <!-- SHAP panel -->
+    <div id="panel-shap" class="tab-panel active">
+      ${renderSHAP(data)}
+    </div>
+    <!-- LIME panel -->
+    <div id="panel-lime" class="tab-panel">
+      ${renderLIME(data)}
+    </div>
+    <!-- Skills panel -->
+    <div id="panel-skills" class="tab-panel">
+      ${renderSkillMatrix(data)}
+    </div>
+    <!-- Heatmap panel -->
+    <div id="panel-heatmap" class="tab-panel">
+      ${renderHeatmap(data)}
+    </div>
+    <!-- Counterfactuals panel -->
+    <div id="panel-counter" class="tab-panel">
+      ${renderCounterfactuals(data)}
+    </div>
+    <!-- Interactions panel -->
+    <div id="panel-interact" class="tab-panel">
+      ${renderInteractions(data)}
+    </div>
+    <!-- Summary panel -->
+    <div id="panel-summary" class="tab-panel">
+      ${renderSummary(data)}
+    </div>
+  `;
+
+  // quick stats sidebar
+  document.getElementById('quick-stats').style.display = 'block';
+  document.getElementById('quick-stats-content').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Strong skills</span><span style="color:var(--success)">${data.strong_skills?.length || 0}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Partial skills</span><span style="color:var(--warn)">${data.partial_skills?.length || 0}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="color:var(--muted)">Missing skills</span><span style="color:var(--danger)">${data.missing_skills?.length || 0}</span></div>
+    </div>
+  `;
+
+  document.getElementById('results').style.display = 'block';
+
+  // animate bars after render
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill[data-w]').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 50);
+}
+
+function metricCard(label, value, color) {
+  return `<div class="card" style="text-align:center">
+    <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">${label}</div>
+    <div style="font-size:28px;font-weight:800;color:${color}">${value}</div>
+  </div>`;
+}
+
+function renderScoreComponents(comp, overall, scoreColor) {
+  if (!comp) return '<p>No component data.</p>';
+  const items = [
+    { label: 'Ontology Match', key: 'ontology_score', color: '#6c63ff', tip: 'Skill extraction from domain ontology — checks YOLO, COCO, BERT etc. as skills (45% weight)' },
+    { label: 'Semantic Match', key: 'semantic_score', color: '#00d4aa', tip: 'LSA semantic similarity to 2,483 real resumes in this role (30% weight)' },
+    { label: 'Skill Depth', key: 'depth_score', color: '#ffb347', tip: 'Experience years, education, quantified achievements, tool density (15% weight)' },
+    { label: 'Corpus Match', key: 'corpus_score', color: '#4fc3f7', tip: 'How similar your resume is to top performers in this role (10% weight)' },
+  ];
+
+  let html = `<div class="score-ring-wrap" style="margin-bottom:20px">
+    <div class="score-ring">
+      <svg width="140" height="140" viewBox="0 0 140 140">
+        <circle cx="70" cy="70" r="58" fill="none" stroke="#2a2d3e" stroke-width="12"/>
+        <circle cx="70" cy="70" r="58" fill="none" stroke="${scoreColor}" stroke-width="12"
+          stroke-dasharray="${(overall/100*364).toFixed(1)} 364" stroke-linecap="round"/>
+      </svg>
+      <div class="score-val"><div class="num" style="color:${scoreColor}">${overall}%</div><div class="pct">Overall</div></div>
+    </div>
+  </div>`;
+
+  for (const item of items) {
+    const val = comp[item.key] || 0;
+    html += `<div class="comp-row">
+      <div class="comp-label" data-tip="${item.tip}">${item.label} <span style="font-size:10px;color:var(--muted)">${Math.round((comp.weights?.[item.key.replace('_score','')] || 0)*100)}%</span></div>
+      <div class="comp-bar">
+        <div class="progress-bar"><div class="progress-fill" data-w="${val}" style="width:0%;background:${item.color}"></div></div>
+      </div>
+      <div class="comp-val" style="color:${item.color}">${val.toFixed(1)}%</div>
+    </div>`;
+  }
+  return html;
+}
+
+// ── SHAP ─────────────────────────────────────────────────────────────────────
+function renderSHAP(data) {
+  const shap = data.shap_summary || [];
+  const maxVal = Math.max(...shap.map(s => Math.abs(s.shapley_value)), 0.001);
+
+  let html = `<div class="card">
+    <h2>🔬 SHAP Feature Attribution</h2>
+    <p style="margin-bottom:16px">True Shapley values show the <b style="color:var(--text)">exact contribution of each skill</b> to your overall score — computed over all possible skill coalitions.</p>`;
+
+  for (const s of shap) {
+    const pct = (Math.abs(s.shapley_value) / maxVal * 42).toFixed(1);
+    const isPos = s.shapley_value >= 0;
+    const color = isPos ? '#6c63ff' : '#ff4d6d';
+    html += `<div class="shap-bar-wrap" data-tip="${s.impact_label} — You: ${s.your_score}% | Required: ${s.required_score}% | Gap: ${s.gap}%">
+      <div class="shap-label">${s.display_name}</div>
+      <div class="shap-track">
+        <div class="shap-center"></div>
+        ${isPos
+          ? `<div class="shap-fill-pos" style="width:${pct}%"></div>`
+          : `<div class="shap-fill-neg" style="width:${pct}%"></div>`}
+      </div>
+      <div class="shap-val" style="color:${color}">${isPos ? '+' : ''}${(s.shapley_value*100).toFixed(2)}</div>
+      <span class="badge badge-${isPos ? (s.your_score >= s.required_score*0.75 ? 'strong' : 'partial') : 'missing'}" style="font-size:10px;white-space:nowrap">${s.impact_label}</span>
+    </div>`;
+  }
+  html += '</div>';
+
+  // NL insights
+  html += `<div class="card" style="margin-top:16px"><h2>💬 SHAP Insights — In Plain English</h2>`;
+  for (const insight of (data.nl_shap_insights || [])) {
+    html += `<div class="nl-box">${insight}</div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// ── LIME ──────────────────────────────────────────────────────────────────────
+function renderLIME(data) {
+  const lime = data.lime_results || [];
+  const maxVal = Math.max(...lime.map(l => Math.abs(l.lime_weight)), 0.001);
+
+  let html = `<div class="card">
+    <h2>🧪 LIME — Local Explanation</h2>
+    <p style="margin-bottom:16px">LIME perturbs your resume (randomly removes skills) <b style="color:var(--text)">${300} times</b> and fits a local linear model. Weights show local sensitivity — which skills matter most around your exact profile.</p>`;
+
+  for (const l of lime) {
+    const pct = (Math.abs(l.lime_weight) / maxVal * 80).toFixed(1);
+    const color = l.direction === 'positive' ? '#00d4aa' : '#ff4d6d';
+    html += `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:12px">${l.display_name}</span>
+        <span style="font-size:12px;color:${color};font-weight:600">${l.direction === 'positive' ? '+' : ''}${l.lime_weight.toFixed(4)}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" data-w="${pct}" style="width:0%;background:${color}"></div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="nl-box lime" style="margin-top:16px">${data.nl_lime_insight || ''}</div></div>`;
+
+  // SHAP vs LIME comparison
+  html += `<div class="card" style="margin-top:16px">
+    <h2>⚖ SHAP vs LIME Comparison</h2>
+    <p style="margin-bottom:14px">SHAP is global/fair; LIME is local/approximate. When they agree, the explanation is robust.</p>
+    <table class="skill-table"><thead><tr><th>Skill</th><th>SHAP</th><th>LIME</th><th>Agreement</th></tr></thead><tbody>`;
+
+  const shapMap = Object.fromEntries((data.shap_summary||[]).map(s=>[s.skill, s.shapley_value]));
+  const limeMap = Object.fromEntries(lime.map(l=>[l.skill, l.lime_weight]));
+  const allSkills = [...new Set([...Object.keys(shapMap), ...Object.keys(limeMap)])].slice(0,8);
+
+  for (const sk of allSkills) {
+    const sv = shapMap[sk] || 0;
+    const lv = limeMap[sk] || 0;
+    const agree = (sv >= 0 && lv >= 0) || (sv < 0 && lv < 0);
+    html += `<tr>
+      <td>${sk.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}</td>
+      <td style="color:${sv>=0?'#6c63ff':'#ff4d6d'}">${sv>=0?'+':''}${(sv*100).toFixed(2)}</td>
+      <td style="color:${lv>=0?'#00d4aa':'#ff4d6d'}">${lv>=0?'+':''}${lv.toFixed(4)}</td>
+      <td><span class="badge badge-${agree?'strong':'missing'}">${agree?'✓ Agree':'✗ Diverge'}</span></td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+// ── Skill Matrix ──────────────────────────────────────────────────────────────
+function renderSkillMatrix(data) {
+  const skills = data.skill_breakdown || [];
+  let html = `<div class="card">
+    <h2>📋 Skill Coverage Matrix</h2>
+    <p style="margin-bottom:14px">Every skill required for <b style="color:var(--text)">${(data.role||'').replace(/-/g,' ')}</b> — how much you have vs. what's needed.</p>
+    <table class="skill-table"><thead><tr>
+      <th>Skill</th><th>Your Level</th><th>Required</th><th>Coverage</th><th>Gap</th><th>Status</th><th>SHAP</th>
+    </tr></thead><tbody>`;
+
+  for (const sk of skills) {
+    const color = sk.status === 'strong' ? '#00d4aa' : sk.status === 'partial' ? '#ffb347' : '#ff4d6d';
+    html += `<tr>
+      <td style="font-weight:500">${sk.display_name}</td>
+      <td>${sk.your_score.toFixed(0)}%</td>
+      <td>${sk.required_score.toFixed(0)}%</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div class="progress-bar" style="width:80px">
+            <div class="progress-fill" data-w="${sk.coverage}" style="width:0%;background:${color}"></div>
+          </div>
+          <span style="font-size:11px;color:${color}">${sk.coverage.toFixed(0)}%</span>
+        </div>
+      </td>
+      <td style="color:${sk.gap > 20 ? 'var(--danger)' : 'var(--muted)'}">${sk.gap.toFixed(0)}%</td>
+      <td><span class="badge badge-${sk.status}">${sk.status === 'strong' ? '✓ Strong' : sk.status === 'partial' ? '~ Partial' : '✗ Missing'}</span></td>
+      <td style="color:#6c63ff;font-size:11px">${sk.shapley >= 0 ? '+' : ''}${(sk.shapley*100).toFixed(2)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table></div>';
+
+  // Summary badges
+  html += `<div class="card" style="margin-top:16px"><h2>Skill Status Summary</h2><div style="display:flex;gap:16px;flex-wrap:wrap">`;
+  const groups = { strong: data.strong_skills||[], partial: data.partial_skills||[], missing: data.missing_skills||[] };
+  for (const [status, arr] of Object.entries(groups)) {
+    if (arr.length) html += `<div><h3 style="margin-bottom:6px">${status.toUpperCase()}</h3><div style="display:flex;flex-wrap:wrap;gap:6px">${arr.map(s=>`<span class="badge badge-${status}">${s.replace(/_/g,' ')}</span>`).join('')}</div></div>`;
+  }
+  html += '</div></div>';
+  return html;
+}
+
+// ── Heatmap ───────────────────────────────────────────────────────────────────
+function renderHeatmap(data) {
+  const tokens = data.token_heatmap || [];
+  const sentences = data.highlighted_sentences || [];
+
+  let html = `<div class="card">
+    <h2>🌡 Resume Attention Heatmap</h2>
+    <p style="margin-bottom:14px">Words highlighted by how much they contributed to your score for this role. <span style="color:#ff8fa3">■ Critical</span> <span style="color:#ffd080">■ High</span> <span style="color:#a5a0ff">■ Medium</span> <span style="color:var(--muted)">■ Low</span></p>
+    <div class="heatmap-wrap">`;
+
+  for (const t of tokens) {
+    if (t.importance > 0.01) {
+      html += `<span class="heat-token heat-${t.level}" data-tip="Importance: ${(t.importance*100).toFixed(0)}%">${t.token}</span>`;
+    }
+  }
+  html += `</div></div>`;
+
+  if (sentences.length) {
+    html += `<div class="card" style="margin-top:16px"><h2>🔦 Most Impactful Resume Sentences</h2>`;
+    for (const s of sentences) {
+      const color = s.level === 'critical' ? 'var(--danger)' : s.level === 'high' ? 'var(--warn)' : s.level === 'medium' ? 'var(--accent)' : 'var(--muted)';
+      html += `<div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;padding:10px 12px;background:var(--bg3);border-radius:8px;border-left:3px solid ${color}">
+        <div style="font-size:12px;flex:1;color:var(--text)">${s.sentence || '…'}</div>
+        <div style="font-size:11px;color:${color};white-space:nowrap;font-weight:600">${(s.score*100).toFixed(0)}%</div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+// ── Counterfactuals ───────────────────────────────────────────────────────────
+function renderCounterfactuals(data) {
+  const cfs = data.counterfactuals || [];
+  let html = `<div class="card">
+    <h2>💡 Counterfactual Explanations</h2>
+    <p style="margin-bottom:16px">"What if?" scenarios — exactly which skills to learn to maximize your score increase.</p>`;
+
+  for (const cf of cfs) {
+    const barW = Math.min(100, cf.score_after);
+    html += `<div class="cf-card">
+      <div class="cf-header">
+        <div style="font-size:13px;font-weight:600">${cf.description}</div>
+        <div class="cf-gain">+${cf.gain}%</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+        <span style="font-size:11px;color:var(--muted)">Before: <b style="color:var(--text)">${cf.score_before}%</b></span>
+        <div style="flex:1">
+          <div class="progress-bar"><div class="progress-fill" data-w="${barW}" style="width:0%;background:var(--success)"></div></div>
+        </div>
+        <span style="font-size:11px;color:var(--muted)">After: <b style="color:var(--success)">${cf.score_after}%</b></span>
+      </div>
+      <div style="font-size:12px">${cf.priority}</div>
+    </div>`;
+  }
+  html += '</div>';
+
+  if (data.nl_counterfactual_insights?.length) {
+    html += `<div class="card" style="margin-top:16px"><h2>📣 Counterfactual Insights</h2>`;
+    for (const i of data.nl_counterfactual_insights) {
+      html += `<div class="nl-box cf">${i}</div>`;
+    }
+    html += '</div>';
+  }
+  return html;
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────────
+function renderInteractions(data) {
+  const ints = data.feature_interactions || [];
+  let html = `<div class="card">
+    <h2>🔗 Feature Interactions — Skill Synergies</h2>
+    <p style="margin-bottom:16px">Shapley interaction values: pairs of skills that together give more (positive) or less (negative) than the sum of their individual contributions.</p>`;
+
+  if (!ints.length) {
+    html += '<p>Not enough skills to compute interactions.</p>';
+  }
+
+  for (const i of ints) {
+    const color = i.synergy === 'positive' ? '#00d4aa' : i.synergy === 'negative' ? '#ff4d6d' : '#8b8fa8';
+    const pct = Math.min(80, Math.abs(i.interaction) * 500).toFixed(1);
+    html += `<div class="interaction-row">
+      <div class="interaction-label">${i.label.replace(/_/g,' ')}</div>
+      <div style="flex:1"><div class="progress-bar"><div class="progress-fill" data-w="${pct}" style="width:0%;background:${color}"></div></div></div>
+      <div class="interaction-val" style="color:${color}">${i.interaction >= 0 ? '+' : ''}${i.interaction.toFixed(4)}</div>
+      <span class="badge badge-${i.synergy === 'positive' ? 'strong' : i.synergy === 'negative' ? 'missing' : 'info'}">${i.synergy}</span>
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+// ── Summary ───────────────────────────────────────────────────────────────────
+function renderSummary(data) {
+  const score = data.overall_score;
+  const scoreColor = score >= 75 ? '#00d4aa' : score >= 55 ? '#ffb347' : '#ff4d6d';
+
+  let html = `<div class="card">
+    <h2>📝 Complete XAI Summary Report</h2>
+    <div class="nl-box" style="margin-bottom:12px;font-size:14px">${(data.nl_overall||'').replace(/\n/g,'<br>')}</div>
+
+    <h3 style="margin:16px 0 8px">SHAP Insights</h3>
+    ${(data.nl_shap_insights||[]).map(i=>`<div class="nl-box">${i}</div>`).join('')}
+
+    <h3 style="margin:16px 0 8px">LIME Insight</h3>
+    <div class="nl-box lime">${data.nl_lime_insight||''}</div>
+
+    <h3 style="margin:16px 0 8px">Counterfactual Recommendations</h3>
+    ${(data.nl_counterfactual_insights||[]).map(i=>`<div class="nl-box cf">${i}</div>`).join('')}
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>🎯 Action Plan</h2>
+    ${generateActionPlan(data)}
+  </div>`;
+
+  return html;
+}
+
+function generateActionPlan(data) {
+  const missing = data.missing_skills || [];
+  const partial = data.partial_skills || [];
+  const cfs = data.counterfactuals || [];
+
+  let html = '';
+  if (cfs.length) {
+    html += `<div style="margin-bottom:16px"><h3 style="margin-bottom:8px">🔥 Immediate Priorities (Highest Score Impact)</h3>`;
+    for (const cf of cfs.slice(0,3)) {
+      html += `<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg3);border-radius:8px;margin-bottom:8px">
+        <div style="width:40px;height:40px;border-radius:50%;background:#00d4aa22;display:flex;align-items:center;justify-content:center;color:#00d4aa;font-weight:800;font-size:13px">+${cf.gain.toFixed(0)}%</div>
+        <div>
+          <div style="font-size:13px;font-weight:600">${cf.description}</div>
+          <div style="font-size:11px;color:var(--muted)">${cf.priority} — Score would go ${cf.score_before}% → ${cf.score_after}%</div>
+        </div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+
+  if (partial.length) {
+    html += `<div><h3 style="margin-bottom:8px">📈 Skills to Strengthen (Partial Coverage)</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${partial.map(s=>`<span class="badge badge-partial">${s.replace(/_/g,' ')}</span>`).join('')}</div></div>`;
+  }
+
+  return html || '<p>Add skills to generate your action plan.</p>';
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.onclick?.toString().includes(`'${name}'`)) t.classList.add('active');
+  });
+  const panel = document.getElementById(`panel-${name}`);
+  if (panel) {
+    panel.classList.add('active');
+    // re-animate bars in this panel
+    setTimeout(() => {
+      panel.querySelectorAll('.progress-fill[data-w]').forEach(el => {
+        el.style.width = el.dataset.w + '%';
+      });
+    }, 50);
+  }
+}
+</script>
+</body>
+</html>

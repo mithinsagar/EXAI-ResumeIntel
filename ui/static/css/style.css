@@ -1,0 +1,351 @@
+/*
+ * EXAI-ResumeIntel: Landing page stylesheet
+ * Author: Mithin Sagar S
+ * GitHub: https://github.com/mithinsagar
+ * Institution: Vellore Institute of Technology (VIT)
+ */
+
+:root {
+    --bg-primary: #0f1117;
+    --bg-secondary: #181b23;
+    --bg-tertiary: #1e2130;
+    --card-bg: #1a1d2e;
+    --border: #2a2d3e;
+    --text-primary: #e8eaf6;
+    --text-muted: #8b8fa8;
+    --accent: #6c63ff;
+    --accent-secondary: #00d4aa;
+    --danger: #ff4d6d;
+    --warning: #ffb347;
+    --success: #00d4aa;
+    --info: #4fc3f7;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --max-width: 1200px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* --- Navigation --- */
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15, 17, 23, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+}
+
+.nav-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.brand-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.brand-tag {
+    font-size: 10px;
+    background: rgba(108, 99, 255, 0.15);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 99px;
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-left: 4px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    align-items: center;
+}
+
+.nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.nav-links a:hover {
+    color: var(--text-primary);
+}
+
+.nav-cta {
+    background: var(--accent);
+    color: #fff !important;
+    padding: 8px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.nav-cta:hover {
+    background: #5a52e0;
+}
+
+/* --- Hero --- */
+.hero {
+    padding: 96px 0 72px;
+    text-align: center;
+}
+
+.hero-tag {
+    display: inline-block;
+    background: rgba(108, 99, 255, 0.12);
+    color: var(--accent);
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    border: 1px solid rgba(108, 99, 255, 0.25);
+}
+
+.hero-title {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #ffffff 0%, #a5a0ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 20px;
+    color: var(--text-muted);
+    max-width: 720px;
+    margin: 0 auto 40px;
+    line-height: 1.5;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #5a52e0;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-secondary);
+    border-color: var(--accent);
+}
+
+/* --- Stats --- */
+.stats {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+
+/* --- Section --- */
+.section {
+    padding: 96px 0;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.section-subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto 56px;
+}
+
+/* --- Features grid --- */
+.features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.feature-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+}
+
+.feature-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(108, 99, 255, 0.15);
+    color: var(--accent);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.feature-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.feature-desc {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+/* --- Architecture diagram --- */
+.arch-diagram {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.7;
+}
+
+/* --- Footer --- */
+.footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.footer a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+    .hero-title { font-size: 40px; }
+    .hero-subtitle { font-size: 17px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .features { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .section { padding: 64px 0; }
+    .section-title { font-size: 28px; }
+}
