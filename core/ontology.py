@@ -490,6 +490,27 @@ ROLE_SKILL_WEIGHTS: Dict[str, Dict[str, float]] = {
         "communication": 0.6,
         "project_management": 0.5,
     },
+    "DEVOPS ENGINEER": {
+        "software_engineering": 1.0,
+        "databases": 0.5,
+        "cybersecurity": 0.5,
+        "project_management": 0.5,
+        "communication": 0.5,
+    },
+    "DATA ENGINEER": {
+        "databases": 1.0,
+        "data_science": 0.7,
+        "software_engineering": 0.7,
+        "python": 0.8,
+        "communication": 0.4,
+    },
+    "PRODUCT MANAGER": {
+        "project_management": 0.9,
+        "leadership": 0.8,
+        "communication": 0.9,
+        "data_science": 0.4,
+        "software_engineering": 0.3,
+    },
     "ACCOUNTANT": {
         "accounting": 1.0,
         "finance": 0.8,

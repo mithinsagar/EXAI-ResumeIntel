@@ -65,6 +65,28 @@ def test_role_requirements_ml_engineer(ontology):
     assert reqs["machine_learning"] >= 0.9
 
 
+def test_role_requirements_devops_engineer(ontology):
+    """DEVOPS ENGINEER should require software engineering skills, not the
+    generic ENGINEERING (mechanical/civil) weights it used to fall back to."""
+    reqs = ontology.get_role_requirements("DEVOPS ENGINEER")
+    assert reqs["software_engineering"] >= 0.9
+    assert "mechanical_engineering" not in reqs
+
+
+def test_role_requirements_data_engineer(ontology):
+    """DATA ENGINEER should weight databases and Python highly."""
+    reqs = ontology.get_role_requirements("DATA ENGINEER")
+    assert reqs["databases"] >= 0.9
+    assert "python" in reqs
+
+
+def test_role_requirements_product_manager(ontology):
+    """PRODUCT MANAGER should weight leadership and communication highly."""
+    reqs = ontology.get_role_requirements("PRODUCT MANAGER")
+    assert reqs["project_management"] >= 0.8
+    assert reqs["communication"] >= 0.8
+
+
 def test_role_requirements_fallback(ontology):
     """Unknown roles should return a sensible default requirement set."""
     reqs = ontology.get_role_requirements("SOME_MADE_UP_ROLE_XYZ")
