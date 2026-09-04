@@ -58,6 +58,23 @@ def finance_resume() -> str:
 
 
 @pytest.fixture
+def mobile_resume() -> str:
+    """A representative Mobile Developer resume for testing."""
+    return """
+    Mobile Developer with 4 years experience building cross platform apps.
+
+    Skills: Kotlin, Android Studio, Jetpack Compose, SwiftUI, Xcode,
+    Flutter, Dart, React Native, REST API integration, Git.
+
+    Experience:
+    Mobile Engineer at AppWorks (2021-Present)
+    Shipped iOS and Android apps to the App Store and Google Play.
+
+    Education: B.Tech Computer Science, VIT University
+    """
+
+
+@pytest.fixture
 def hr_resume() -> str:
     """A representative HR Manager resume."""
     return """
