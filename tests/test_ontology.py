@@ -45,6 +45,23 @@ def test_parent_propagation(ontology):
     assert skills["machine_learning"] <= skills["computer_vision"]
 
 
+def test_mobile_development_detected(ontology, mobile_resume):
+    """The mobile resume should register the mobile_development skill and
+    propagate credit to its software_engineering parent."""
+    skills = ontology.extract_skills(mobile_resume)
+    assert "mobile_development" in skills
+    assert "software_engineering" in skills
+    # Parent propagation uses decay 0.8, so parent confidence should be <= child
+    assert skills["software_engineering"] <= skills["mobile_development"]
+
+
+def test_role_requirements_mobile_developer(ontology):
+    """MOBILE DEVELOPER should require mobile_development highly."""
+    reqs = ontology.get_role_requirements("MOBILE DEVELOPER")
+    assert reqs["mobile_development"] >= 0.9
+    assert "software_engineering" in reqs
+
+
 def test_finance_domain(ontology, finance_resume):
     """Finance-domain terms should trigger finance and accounting skills."""
     skills = ontology.extract_skills(finance_resume)

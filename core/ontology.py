@@ -4,7 +4,7 @@ EXAI-ResumeIntel: Skill ontology and concept expansion engine
 
 Maps surface-level terms to canonical skill concepts and handles implicit
 skill inference (e.g. YOLO -> Computer Vision -> Machine Learning). The
-ontology contains 22 canonical skill nodes and 346 alias strings across
+ontology contains 26 canonical skill nodes and 934 alias strings across
 IT, Finance, HR, Healthcare, Legal, and other domains.
 
 Corresponds to paper Section III.C (Domain Ontology and Skill Extraction).
@@ -177,6 +177,21 @@ SKILL_ONTOLOGY: Dict[str, Dict] = {
             "rest", "restful", "http", "https", "websocket", "graphql",
             "redux", "mobx", "zustand", "context api", "hooks",
             "responsive design", "mobile first", "pwa", "spa"
+        ],
+        "children": [],
+        "parents": ["software_engineering"],
+        "weight": 0.9,
+        "category": "INFORMATION-TECHNOLOGY"
+    },
+    "mobile_development": {
+        "aliases": [
+            "mobile development", "ios development", "android development",
+            "mobile app development", "native app development",
+            "swiftui", "swift programming", "objective c", "xcode",
+            "kotlin", "java android", "android studio", "jetpack compose",
+            "flutter", "dart", "react native", "expo", "ionic",
+            "xamarin", "cordova", "app store", "google play", "play store",
+            "mobile app", "cross platform app", "android sdk", "ios sdk"
         ],
         "children": [],
         "parents": ["software_engineering"],
@@ -503,6 +518,13 @@ ROLE_SKILL_WEIGHTS: Dict[str, Dict[str, float]] = {
         "software_engineering": 0.7,
         "python": 0.8,
         "communication": 0.4,
+    },
+    "MOBILE DEVELOPER": {
+        "mobile_development": 1.0,
+        "software_engineering": 0.6,
+        "web_development": 0.3,
+        "databases": 0.3,
+        "communication": 0.5,
     },
     "PRODUCT MANAGER": {
         "project_management": 0.9,
