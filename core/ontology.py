@@ -4,7 +4,7 @@ EXAI-ResumeIntel: Skill ontology and concept expansion engine
 
 Maps surface-level terms to canonical skill concepts and handles implicit
 skill inference (e.g. YOLO -> Computer Vision -> Machine Learning). The
-ontology contains 26 canonical skill nodes and 934 alias strings across
+ontology contains 27 canonical skill nodes and 996 alias strings across
 IT, Finance, HR, Healthcare, Legal, and other domains.
 
 Corresponds to paper Section III.C (Domain Ontology and Skill Extraction).
@@ -156,12 +156,10 @@ SKILL_ONTOLOGY: Dict[str, Dict] = {
             "solid principles", "clean code", "refactoring", "code review",
             "agile", "scrum", "kanban", "sprint", "jira", "confluence",
             "git", "github", "gitlab", "bitbucket", "version control",
-            "ci/cd", "continuous integration", "continuous deployment",
-            "devops", "docker", "kubernetes", "k8s", "helm", "terraform",
-            "aws", "azure", "gcp", "cloud", "microservices", "rest api",
+            "microservices", "rest api",
             "graphql", "grpc", "soap", "api design", "swagger", "openapi"
         ],
-        "children": ["python", "web_development", "databases"],
+        "children": ["python", "web_development", "databases", "cloud_computing"],
         "parents": [],
         "weight": 1.0,
         "category": "INFORMATION-TECHNOLOGY"
@@ -244,6 +242,32 @@ SKILL_ONTOLOGY: Dict[str, Dict] = {
         ],
         "children": [],
         "parents": ["machine_learning", "software_engineering"],
+        "weight": 0.9,
+        "category": "INFORMATION-TECHNOLOGY"
+    },
+    "cloud_computing": {
+        "aliases": [
+            "cloud computing", "cloud infrastructure", "cloud architecture",
+            "cloud engineer", "cloud native", "multi cloud", "hybrid cloud",
+            "infrastructure as code", "iac", "site reliability engineering", "sre",
+            "aws", "amazon web services", "ec2", "s3", "lambda", "vpc", "iam",
+            "cloudfront", "route53", "elastic beanstalk", "cloudformation",
+            "azure", "microsoft azure", "azure devops", "azure functions",
+            "azure virtual machines", "gcp", "google cloud", "google cloud platform",
+            "compute engine", "cloud functions", "cloud run", "cloud storage",
+            "docker", "containerization", "kubernetes", "k8s", "helm",
+            "container orchestration", "docker compose", "docker swarm",
+            "terraform", "ansible", "puppet", "pulumi", "configuration management",
+            "ci/cd", "continuous integration", "continuous deployment",
+            "continuous delivery", "jenkins", "gitlab ci", "github actions",
+            "circleci", "argocd", "spinnaker", "devops", "devsecops",
+            "observability", "prometheus", "grafana", "elk stack", "datadog",
+            "new relic", "pagerduty", "nagios", "service mesh", "istio",
+            "linkerd", "load balancing", "auto scaling", "cloud security",
+            "cloud migration", "cost optimization"
+        ],
+        "children": [],
+        "parents": ["software_engineering"],
         "weight": 0.9,
         "category": "INFORMATION-TECHNOLOGY"
     },
@@ -480,6 +504,7 @@ ROLE_SKILL_WEIGHTS: Dict[str, Dict[str, float]] = {
         "databases": 0.8,
         "python": 0.85,
         "web_development": 0.7,
+        "cloud_computing": 0.6,
         "cybersecurity": 0.5,
         "communication": 0.5,
         "project_management": 0.5,
@@ -506,6 +531,7 @@ ROLE_SKILL_WEIGHTS: Dict[str, Dict[str, float]] = {
         "project_management": 0.5,
     },
     "DEVOPS ENGINEER": {
+        "cloud_computing": 1.0,
         "software_engineering": 1.0,
         "databases": 0.5,
         "cybersecurity": 0.5,
@@ -516,6 +542,7 @@ ROLE_SKILL_WEIGHTS: Dict[str, Dict[str, float]] = {
         "databases": 1.0,
         "data_science": 0.7,
         "software_engineering": 0.7,
+        "cloud_computing": 0.6,
         "python": 0.8,
         "communication": 0.4,
     },

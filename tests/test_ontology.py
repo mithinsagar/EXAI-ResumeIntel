@@ -62,6 +62,24 @@ def test_role_requirements_mobile_developer(ontology):
     assert "software_engineering" in reqs
 
 
+def test_cloud_computing_detected(ontology, devops_resume):
+    """The DevOps resume should register the cloud_computing skill and
+    propagate credit to its software_engineering parent."""
+    skills = ontology.extract_skills(devops_resume)
+    assert "cloud_computing" in skills
+    assert "software_engineering" in skills
+    # Parent propagation uses decay 0.8, so parent confidence should be <= child
+    assert skills["software_engineering"] <= skills["cloud_computing"]
+
+
+def test_role_requirements_devops_engineer_weights_cloud(ontology):
+    """DEVOPS ENGINEER should require cloud_computing highly, not just the
+    generic software_engineering node."""
+    reqs = ontology.get_role_requirements("DEVOPS ENGINEER")
+    assert reqs["cloud_computing"] >= 0.9
+    assert reqs["software_engineering"] >= 0.9
+
+
 def test_finance_domain(ontology, finance_resume):
     """Finance-domain terms should trigger finance and accounting skills."""
     skills = ontology.extract_skills(finance_resume)
