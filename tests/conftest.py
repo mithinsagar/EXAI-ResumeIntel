@@ -75,6 +75,23 @@ def mobile_resume() -> str:
 
 
 @pytest.fixture
+def devops_resume() -> str:
+    """A representative DevOps Engineer resume for testing."""
+    return """
+    DevOps Engineer with 5 years experience automating cloud infrastructure.
+
+    Skills: AWS EC2, S3, Lambda, Terraform, Ansible, Docker, Kubernetes,
+    Jenkins CI/CD, GitHub Actions, Prometheus, Grafana, site reliability engineering.
+
+    Experience:
+    Senior DevOps Engineer at CloudWorks (2021-Present)
+    Migrated on-prem workloads to AWS, cutting infrastructure costs 30%.
+
+    Education: B.Tech Computer Science, VIT University
+    """
+
+
+@pytest.fixture
 def hr_resume() -> str:
     """A representative HR Manager resume."""
     return """
